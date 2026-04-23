@@ -1,0 +1,42 @@
+{
+  "name": "axis-conformance",
+  "version": "0.1.0-alpha.1",
+  "description": "Conformance test suite for AXIS registries. Probes a registry URL against the Registry Conformance v0.1 spec and emits a pass/fail report.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "axis-conformance": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "check": "node src/cli.js"
+  },
+  "keywords": [
+    "axis",
+    "axis-protocol",
+    "conformance",
+    "test-suite",
+    "registry"
+  ],
+  "author": "Josh Ashcroft",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "homepage": "https://github.com/MachinesOfDesire/axis-conformance",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MachinesOfDesire/axis-conformance.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MachinesOfDesire/axis-conformance/issues"
+  },
+  "dependencies": {
+    "axis-protocol-sdk": "file:../axis-protocol-sdk"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ]
+}
