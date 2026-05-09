@@ -1,32 +1,37 @@
 # axis-conformance
 
-Conformance test suite for AXIS registries. Probes a registry URL against the [Registry Conformance v0.1 spec](https://github.com/MachinesOfDesire/axis-registry/blob/main/docs/conformance.md) and emits a pass/fail report.
+Two artifacts in one repository:
 
-> **Status:** v0.1.0-alpha.1. Covers the subset of conformance requirements that can be automated. Several requirements (availability SLOs, retention duration, PII handling) are inherently long-term or internal and are flagged as manual-verification items.
+1. **The normative spec** — [`conformance-v0.1.md`](./conformance-v0.1.md), the runtime-behavior requirements every AXIS-conformant registry must meet.
+2. **The reference test runner** — `axis-conformance` (npm package, source under `src/`), which probes a registry against the spec and emits a pass/fail report.
+
+The protocol wire contract (record formats, AIT structure, endpoint schemas) lives at [MachinesOfDesire/axis-protocol](https://github.com/MachinesOfDesire/axis-protocol). A registry that wants to call itself AXIS-conformant satisfies both documents.
+
+> **Status:** spec v0.1, runner v0.1.0-alpha.1. The runner covers the subset of conformance requirements that can be automated. Several requirements (availability SLOs, retention duration, PII handling) are inherently long-term or internal and are flagged as manual-verification items in the spec.
 
 ---
 
-## What this is for
+## The spec
 
-If you run a registry (the reference one at `registry.axisprime.ai`, or your own fork, or eventually a third-party registry from someone else in the federation), this tool tells you whether your registry meets Registry Conformance v0.1.
+[Registry Conformance v0.1](./conformance-v0.1.md) covers authentication, authorization scoping, audit logging, retention, domain verification, tiered visibility, rate limiting, availability, data handling, and key management. Pre-1.0 — breaking changes are possible between minor versions. Conformance versions are independent of the protocol specification version; a registry declares conformance against a specific version of this document (e.g., "AXIS Registry Conformance v0.1") alongside its protocol version.
 
-If you are thinking about building one, run this against your WIP to see where you stand.
+## The runner
 
-If you are the reference team, this runs in CI on every deploy and guards against regressions.
+If you operate a registry (the reference one at `registry.axisprime.ai`, your own fork, or a third-party in the federation), this tool tells you whether your registry meets the spec. If you're building one, run it against your WIP. If you're the reference team, this runs in CI on every deploy.
 
-## Install
+### Install
 
 ```bash
 npm install -g axis-conformance
 ```
 
-Or run via `npx`:
+Or via `npx`:
 
 ```bash
 npx axis-conformance --registry-url https://registry.axisprime.ai
 ```
 
-## Run
+### Run
 
 **Minimum (public-only checks):**
 
@@ -55,7 +60,7 @@ axis-conformance --registry-url https://... --json > conformance-report.json
 
 Exit codes: `0` conformant, `1` non-conformant, `2` invalid args.
 
-## What it tests
+### What it tests
 
 | Section | Tests |
 |---|---|
@@ -68,7 +73,7 @@ Exit codes: `0` conformant, `1` non-conformant, `2` invalid args.
 
 The more keys and IDs you supply, the more of the suite runs. Tests that can't run with your inputs report as `skip`, not `fail`.
 
-## Example output
+### Example output
 
 ```
 AXIS Registry Conformance v0.1
@@ -92,7 +97,7 @@ summary: 12 pass  0 fail  13 skip  0 error
 verdict: CONFORMANT
 ```
 
-## What it does NOT test
+### What it does NOT test
 
 Kept out of scope for v0.1 (either requires manual observation or is a long-term property):
 
@@ -102,9 +107,7 @@ Kept out of scope for v0.1 (either requires manual observation or is a long-term
 - **§8 Data handling.** PII classification and breach notification process are internal, not API-observable.
 - **§3.2 Audit-before-mutation timing.** Verifying "audit row written before mutation applied" requires instrumenting the registry; this tool treats a successful break-glass call as evidence that the pattern is at least plausible.
 
-## Use in CI
-
-Add to your GitHub Actions workflow:
+### Use in CI
 
 ```yaml
 - name: Registry conformance
@@ -116,6 +119,20 @@ Add to your GitHub Actions workflow:
 ```
 
 Exit status is non-zero on any failure, so the workflow fails the deploy.
+
+### Self-test
+
+A structural self-test for the runner machinery (no network access required):
+
+```bash
+npm test
+```
+
+Validates the SECTIONS array, test shape, and id uniqueness. For "does my registry conform?" use `npm run check` or the `axis-conformance` bin shown above.
+
+## Versioning
+
+Spec versions and runner versions evolve independently. The current pairing is **spec v0.1** and **runner v0.1.0-alpha.1**. The runner advertises which spec version it covers in its CLI output.
 
 ## License
 

@@ -1,5 +1,7 @@
 node_modules/
+package-lock.json
 *.log
+*.tgz
 .DS_Store
 .env
 .env.local
@@ -8,5 +10,3 @@ node_modules/
 coverage/
 dist/
 build/
-*.tgz
-package-lock.json
