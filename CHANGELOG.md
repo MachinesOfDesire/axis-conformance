@@ -4,6 +4,24 @@ All notable changes to `axis-conformance` (the spec doc at `conformance-v0.1.md`
 
 The spec version (currently v0.1) and the runner version evolve independently. This changelog tracks **runner** versions; spec changes show up as version bumps in `conformance-v0.1.md` and in the runner's CLI banner.
 
+## [Unreleased]
+
+### Changed
+
+- **LICENSE copyright line** corrected from `Copyright 2026 Josh Ashcroft / Kipple Labs` (joint attribution) to `Copyright 2026 Kipple Labs, Inc.` per Corporate Canon. All IP held by Kipple Labs, Inc. (Delaware C-corp, formed 2026-04-22) since CIIAA Schedule 1 dated 2026-04-24.
+- **README runner-version line** corrected from `runner v0.1.0-alpha.1` to `runner v0.1.0-alpha.2` to match the shipped release (2026-05-09).
+- **README** gained a Governance section, an expanded License section with trademark notice, and a Contributing pointer — mirroring the structure shipped in [axis-protocol#3](https://github.com/MachinesOfDesire/axis-protocol/pull/3).
+
+### Added
+
+- **NOTICE file** at repo root, attributing the work to Joshua Ashcroft as the original author prior to Kipple Labs formation, with the CIIAA assignment recorded and the Kipple Labs trademark list named. Required by Apache 2.0 §4(d) attribution pattern.
+- **CONTRIBUTING.md** with the canonical Contributor License Agreement — CLA grantee is Kipple Labs, Inc. (and any future foundation or successor that inherits stewardship), per the Corporate Canon. Same CLA language as shipped in axis-protocol#3 (merged 2026-05-11).
+- **CLAUDE.md** at repo root, mirroring the structure standardized in the N7 repo on 2026-05-11: project scope, version coordination as its own section, code conventions filled in, branch-naming convention with date reference, project-specific orientation.
+
+### Notes
+
+These changes are documentation- and canonical-infrastructure-only. No runner behavior or spec text changes. No version bump.
+
 ## [0.1.0-alpha.2] — 2026-05-09
 
 First release that publishes the runner code to GitHub. Prior to this release the public `MachinesOfDesire/axis-conformance` repo held only the spec doc; the runner code lived local-only.

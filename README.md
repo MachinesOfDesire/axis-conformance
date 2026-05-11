@@ -7,7 +7,7 @@ Two artifacts in one repository:
 
 The protocol wire contract (record formats, AIT structure, endpoint schemas) lives at [MachinesOfDesire/axis-protocol](https://github.com/MachinesOfDesire/axis-protocol). A registry that wants to call itself AXIS-conformant satisfies both documents.
 
-> **Status:** spec v0.1, runner v0.1.0-alpha.1. The runner covers the subset of conformance requirements that can be automated. Several requirements (availability SLOs, retention duration, PII handling) are inherently long-term or internal and are flagged as manual-verification items in the spec.
+> **Status:** spec v0.1, runner v0.1.0-alpha.2. The runner covers the subset of conformance requirements that can be automated. Several requirements (availability SLOs, retention duration, PII handling) are inherently long-term or internal and are flagged as manual-verification items in the spec.
 
 ---
 
@@ -132,8 +132,22 @@ Validates the SECTIONS array, test shape, and id uniqueness. For "does my regist
 
 ## Versioning
 
-Spec versions and runner versions evolve independently. The current pairing is **spec v0.1** and **runner v0.1.0-alpha.1**. The runner advertises which spec version it covers in its CLI output.
+Spec versions and runner versions evolve independently. The current pairing is **spec v0.1** and **runner v0.1.0-alpha.2**. The runner advertises which spec version it covers in its CLI output.
+
+See [CHANGELOG.md](./CHANGELOG.md) for runner version history and the [Version Coordination Log](https://www.notion.so/35df359483b281c98747fa47df0b1a65) (internal) for cross-project version coordination.
+
+## Governance
+
+AXIS Conformance is owned by Kipple Labs, Inc. and published under Apache 2.0. It is the companion repository to [AXIS Protocol](https://github.com/MachinesOfDesire/axis-protocol): the wire-protocol contract lives there; the runtime-behavior conformance criteria and the reference test runner live here. A registry that calls itself AXIS-conformant satisfies both documents.
+
+The project is currently maintained by Kipple Labs. At a future date when adoption justifies it, day-to-day maintenance and governance may be delegated to an independent nonprofit foundation, with Kipple Labs retaining ownership of the conformance spec and trademarks. The open source licensing and Contributor License Agreement (see [CONTRIBUTING.md](./CONTRIBUTING.md)) were designed to make this transition legally and technically possible.
+
+## Contributing
+
+Contributions are welcome — issues, pull requests, additional automated tests, refinements to the spec language, third-party registry implementations to verify against. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) and sign the CLA before submitting a pull request.
 
 ## License
 
-Apache 2.0. See [LICENSE](./LICENSE).
+Licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full text and [NOTICE](./NOTICE) for attribution.
+
+© 2026 Kipple Labs, Inc. "AXIS," "AXIS Protocol," "AXIS Prime," "N7," and "Kipple Labs" are pending trademarks of Kipple Labs, Inc. Use of "AXIS Registry Conformance v0.x" as a label for compatible implementations is permitted; see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidance.
