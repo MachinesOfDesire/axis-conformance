@@ -27,7 +27,7 @@ const STATUS_STYLE = {
 export function printHuman(results, { registryUrl }) {
   let currentSection = null;
   const lines = [];
-  lines.push(`${COLOR.bold}AXIS Registry Conformance v0.1${COLOR.reset}`);
+  lines.push(`${COLOR.bold}AXIS Registry Conformance v0.2${COLOR.reset}`);
   lines.push(`${COLOR.dim}target:${COLOR.reset} ${registryUrl}`);
   lines.push(`${COLOR.dim}time:${COLOR.reset}   ${new Date().toISOString()}`);
   lines.push("");
@@ -60,7 +60,7 @@ export function printHuman(results, { registryUrl }) {
   );
 
   const verdict = (tally.fail || 0) + (tally.error || 0) === 0
-    ? `${COLOR.green}${COLOR.bold}CONFORMANT${COLOR.reset} (at the level covered by v0.1 automation; skipped tests need manual verification)`
+    ? `${COLOR.green}${COLOR.bold}CONFORMANT${COLOR.reset} (at the level covered by v0.2 automation; skipped tests need manual verification)`
     : `${COLOR.red}${COLOR.bold}NON-CONFORMANT${COLOR.reset}`;
   lines.push(`${COLOR.bold}verdict:${COLOR.reset} ${verdict}`);
 
@@ -75,7 +75,7 @@ export function printJson(results, ctx) {
   return JSON.stringify(
     {
       suite: "axis-conformance",
-      version: "0.1.0-alpha.1",
+      version: "0.2.0-alpha.1",
       target: ctx.registryUrl,
       timestamp: new Date().toISOString(),
       tally: {
