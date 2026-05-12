@@ -2,18 +2,18 @@
 
 Two artifacts in one repository:
 
-1. **The normative spec** — [`conformance-v0.1.md`](./conformance-v0.1.md), the runtime-behavior requirements every AXIS-conformant registry must meet.
+1. **The normative spec** — [`conformance-v0.2.md`](./conformance-v0.2.md), the runtime-behavior requirements every AXIS-conformant registry must meet. The previous version [`conformance-v0.1.md`](./conformance-v0.1.md) remains as a historical reference for v0.1-conformant registries during the transition window.
 2. **The reference test runner** — `axis-conformance` (npm package, source under `src/`), which probes a registry against the spec and emits a pass/fail report.
 
 The protocol wire contract (record formats, AIT structure, endpoint schemas) lives at [MachinesOfDesire/axis-protocol](https://github.com/MachinesOfDesire/axis-protocol). A registry that wants to call itself AXIS-conformant satisfies both documents.
 
-> **Status:** spec v0.1, runner v0.1.0-alpha.2. The runner covers the subset of conformance requirements that can be automated. Several requirements (availability SLOs, retention duration, PII handling) are inherently long-term or internal and are flagged as manual-verification items in the spec.
+> **Status:** spec v0.2 (covers AXIS Protocol v0.2.0), runner v0.2.0-alpha.1. The runner covers the subset of conformance requirements that can be automated without minting test AITs against a known agent's private key. Several requirements (availability SLOs, retention duration, PII handling, full AIT verification semantics, JCS proof verification) are inherently long-term, internal, or require additional test-mint machinery; these are flagged as manual-verification items in the spec.
 
 ---
 
 ## The spec
 
-[Registry Conformance v0.1](./conformance-v0.1.md) covers authentication, authorization scoping, audit logging, retention, domain verification, tiered visibility, rate limiting, availability, data handling, and key management. Pre-1.0 — breaking changes are possible between minor versions. Conformance versions are independent of the protocol specification version; a registry declares conformance against a specific version of this document (e.g., "AXIS Registry Conformance v0.1") alongside its protocol version.
+[Registry Conformance v0.2](./conformance-v0.2.md) covers everything in v0.1 (authentication, authorization scoping, audit logging, retention, domain verification, tiered visibility, rate limiting, availability, data handling, key management) plus five new sections for AXIS Protocol v0.2.0: AIT verification semantics (REQUIRED `aud`, optional `dlg`), DC scope grammar, AIR operator-namespaced DIDs with cross-form tolerance, registration proof format (`jcs-eddsa-2026`), and `/.well-known/axis-access` audience advertisement. Pre-1.0 — breaking changes are possible between minor versions. Conformance versions are independent of the protocol specification version; a registry declares conformance against a specific version of this document (e.g., "AXIS Registry Conformance v0.2") alongside its protocol version.
 
 ## The runner
 
@@ -70,42 +70,49 @@ Exit codes: `0` conformant, `1` non-conformant, `2` invalid args.
 | §4 Domain verification | Method validation; structural checks |
 | §5 Tiered visibility | Public layer does not leak presentation fields; listing endpoints require auth; agent listing enforces owner-or-admin |
 | §9 Key management | Invalid keys rejected; wrong-form headers rejected |
+| §10 AIT verification (v0.2) | `/verify` rejects malformed and empty tokens without 5xx; `aud` / `dlg` enforcement queued for stable v0.2 runner (requires AIT-mint helper) |
+| §11 DC scope grammar (v0.2) | Mint-time scope validation queued for stable v0.2 runner (requires signed delegation envelope) |
+| §12 AIR DID shape (v0.2) | Known agent's `did` matches v0.1 or v0.2 grammar; cross-form v0.1 → v0.2 resolution tolerance; `operator_id` consistency across `/agents` and `/resolve` |
+| §13 Registration proof (v0.2) | `POST /register` rejects unknown `proofType`; JCS verification queued for stable v0.2 runner |
+| §14 `/.well-known/axis-access` audience (v0.2) | Endpoint returns 200; `audience` field present, non-empty, stable across GETs; `Cache-Control` header (SHOULD) |
 
 The more keys and IDs you supply, the more of the suite runs. Tests that can't run with your inputs report as `skip`, not `fail`.
 
 ### Example output
 
 ```
-AXIS Registry Conformance v0.1
+AXIS Registry Conformance v0.2
 target: https://registry.axisprime.ai
-time:   2026-04-23T16:22:11.489Z
+time:   2026-05-12T03:30:00.000Z
 
 §1 Authentication
   ✓ PASS      §1.1.1.a  POST /register without auth returns 401
-  ✓ PASS      §1.1.1.b  DELETE /agents/:id without auth returns 401
-  ✓ PASS      §1.1.1.c  POST /delegations without auth returns 401
   ✓ PASS      §1.1.3.a  GET /.well-known/axis-access is publicly accessible
-  ✓ PASS      §1.1.3.b  GET /verify with a malformed token returns valid=false (not 401)
-
-§2 Authorization
-  ✓ PASS      §2.2.3.a  GET /agents?operator_id= without auth returns 401
-  ✓ PASS      §2.2.3.b  GET /operators without auth returns 401
-  ✓ PASS      §2.2.4.a  GET /admin/stats without auth returns 401
   ...
 
-summary: 12 pass  0 fail  13 skip  0 error
-verdict: CONFORMANT
+§14 Access-policy advertisement (v0.2)
+  ✓ PASS      §14.1.a   GET /.well-known/axis-access returns 200
+  ✓ PASS      §14.1.b   Response includes `audience` field
+  ✓ PASS      §14.1.c   `audience` is a non-empty string
+  ✓ PASS      §14.1.d   `audience` is stable across multiple GETs
+  ○ SKIP      §14.3.a   Response includes Cache-Control header (SHOULD — advisory)
+
+summary: N pass  0 fail  M skip  0 error
+verdict: CONFORMANT (at the level covered by v0.2 automation; skipped tests need manual verification)
 ```
 
 ### What it does NOT test
 
-Kept out of scope for v0.1 (either requires manual observation or is a long-term property):
+Kept out of scope for v0.2-alpha.1 (either requires manual observation, is a long-term property, or requires test-mint machinery the runner does not yet have):
 
 - **§3.4 Retention duration.** We can't test "did this record still exist 12 months later" from a single test run.
 - **§6 Rate limiting.** Measuring real limits requires dedicated load testing.
 - **§7 Availability.** An SLO is an observation over weeks, not a test.
 - **§8 Data handling.** PII classification and breach notification process are internal, not API-observable.
 - **§3.2 Audit-before-mutation timing.** Verifying "audit row written before mutation applied" requires instrumenting the registry; this tool treats a successful break-glass call as evidence that the pattern is at least plausible.
+- **§10 full AIT verification semantics.** Probing `aud` and `dlg` enforcement requires the runner to mint test AITs against a known agent's private key. The mint helper is queued for the stable v0.2 runner.
+- **§11 DC scope grammar at mint.** Requires a valid signed delegation envelope to reach scope validation. Queued for stable v0.2.
+- **§13 JCS proof verification.** Requires the runner to produce JCS-canonicalized signed registration bodies. Queued for stable v0.2.
 
 ### Use in CI
 
@@ -132,7 +139,7 @@ Validates the SECTIONS array, test shape, and id uniqueness. For "does my regist
 
 ## Versioning
 
-Spec versions and runner versions evolve independently. The current pairing is **spec v0.1** and **runner v0.1.0-alpha.2**. The runner advertises which spec version it covers in its CLI output.
+Spec versions and runner versions evolve independently. The current pairing is **spec v0.2** and **runner v0.2.0-alpha.1**. The runner advertises which spec version it covers in its CLI output. The spec is independent of the AXIS Protocol version it covers; spec v0.2 covers AXIS Protocol v0.2.0.
 
 See [CHANGELOG.md](./CHANGELOG.md) for runner version history and the [Version Coordination Log](https://www.notion.so/35df359483b281c98747fa47df0b1a65) (internal) for cross-project version coordination.
 
