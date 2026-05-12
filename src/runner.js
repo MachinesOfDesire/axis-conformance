@@ -17,6 +17,11 @@ import section03 from "./tests/03-audit.js";
 import section04 from "./tests/04-domain-verification.js";
 import section05 from "./tests/05-tiered-visibility.js";
 import section09 from "./tests/09-key-management.js";
+import section10 from "./tests/10-ait-verification.js";
+import section11 from "./tests/11-dc-scope-grammar.js";
+import section12 from "./tests/12-air-did-shape.js";
+import section13 from "./tests/13-registration-proof.js";
+import section14 from "./tests/14-access-policy-audience.js";
 
 export const SECTIONS = [
   { id: "§1", title: "Authentication", tests: section01 },
@@ -25,6 +30,11 @@ export const SECTIONS = [
   { id: "§4", title: "Domain verification", tests: section04 },
   { id: "§5", title: "Tiered visibility", tests: section05 },
   { id: "§9", title: "Key management", tests: section09 },
+  { id: "§10", title: "AIT verification semantics (v0.2)", tests: section10 },
+  { id: "§11", title: "DC scope grammar (v0.2)", tests: section11 },
+  { id: "§12", title: "AIR DID shape (v0.2)", tests: section12 },
+  { id: "§13", title: "Registration proof format (v0.2)", tests: section13 },
+  { id: "§14", title: "Access-policy advertisement (v0.2)", tests: section14 },
 ];
 
 /**
