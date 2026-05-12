@@ -74,10 +74,17 @@ For these files, I must:
 ## Branch and commit hygiene
 
 - Never push to main
-- Feature branch matches the originating session slug (chat name lowercased, spaces to hyphens, no prefix). Same string as the local workspace dir under `~/.claude/sessions/`. Example: chat "AXIS Conformance - Canon Cleanup" -> branch `axis-conformance-canon-cleanup`. This convention was standardized 2026-05-11 across all Kipple Labs repos; do not use a `claude-code/` or `cowork/` prefix.
+- **Branch naming follows conventional-commits style** (per Corporate Canon §Cross-project conventions, codified 2026-05-12; supersedes the earlier slug-as-branch rule): `<type>/<short-description>` where type is one of `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `style`, `perf`. Examples: `docs/session-protocol-propagation`, `feat/jcs-proof-builder`, `fix/operator-id-consistency`, `chore/canon-cleanup`. The local workspace slug at `~/.claude/sessions/<slug>/` stays private — it is NOT the branch name. PR descriptions may reference the slug for traceability.
 - Conventional commit messages (`spec:`, `runner:`, `test:`, `docs:`, `chore:`, `build:`, `refactor:`)
 - One conceptual change per commit
 - Open a PR when complete; do not merge yourself
+
+## Session protocol (per Corporate Canon §Cross-project conventions, codified 2026-05-12)
+
+- **Public-facing content references the canon, not the approval chain.** PR descriptions, commit messages, README, LICENSE, NOTICE, CONTRIBUTING, repo docs, and marketing copy reference the Corporate Canon or relevant Project Canon as the source of authority. Do NOT reference attorney signoff dates, names, firms, or any detail of the legal review process in public artifacts. Approval-chain detail stays in internal Notion records.
+- **Sessions opening PRs end with an explicit Josh action block.** A session that opens a PR with pending Coordination items must end with an `ACTION REQUIRED — Josh to merge` block (items + PR link + ask to reply `merged`) and wait. Do not close the chat. On Josh's `merged` reply, flip the listed items to Resolved (Resolution text, Resolved by, Resolved date) and end.
+- **Sessions reconcile their own shipped work in sibling references.** When this session ships work that other sessions reference as pending (inbox files, sibling `ACTIVE.md` notes, Claude Sessions Notion blocks), it SHOULD update those references to reflect shipped state. Bounded to own work only.
+- **Critical/High Coordination items spawn Workstreams.** Coordination DB items at Priority = Critical or High, or items requiring multi-session execution / multi-repo propagation / representing finding-backlogs, MUST also create a Workstream entry at filing time. Single-session decisions stay in Coordination only.
 
 ## Session log
 
