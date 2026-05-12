@@ -42,7 +42,7 @@ function parseArgs(argv) {
 }
 
 function helpText() {
-  return `axis-conformance — probe an AXIS registry for Registry Conformance v0.1
+  return `axis-conformance — probe an AXIS registry for Registry Conformance v0.2
 
 Required:
   --registry-url URL            The registry to test
