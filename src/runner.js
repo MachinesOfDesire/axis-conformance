@@ -44,6 +44,10 @@ export const SECTIONS = [
  * @property {string} [apiKeyB]                  — second registrar key for BOLA tests
  * @property {string} [adminKey]                 — key with role=admin
  * @property {string} [superAdminKey]            — key with role=super_admin
+ * @property {string} [knownOperatorId]          — an existing operator id (issuer for §11 mint probes)
+ * @property {string} [knownOperatorEmail]       — email of an operator the registrar key owns (§13 register probes)
+ * @property {string} [knownOperatorDomain]      — domain of an operator the registrar key owns (§13 register probes)
+ * @property {string} [knownAgentId]             — an existing agent id
  * @property {{verbose: boolean}} options
  */
 
