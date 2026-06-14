@@ -8,7 +8,7 @@
     "axis-conformance": "./src/cli.js"
   },
   "scripts": {
-    "test": "node src/self-test.js",
+    "test": "node --test src/self-test.js src/fixtures.test.js",
     "check": "node src/cli.js"
   },
   "keywords": [

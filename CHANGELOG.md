@@ -4,6 +4,24 @@ All notable changes to `axis-conformance` (the spec docs at `conformance-v0.x.md
 
 The spec version (currently v0.2) and the runner version evolve independently. This changelog tracks **runner** versions; spec changes show up as version bumps in `conformance-v0.x.md` and in the runner's CLI banner.
 
+## [Unreleased]
+
+Closes the signed-artifact gap that kept the §10/§11/§13 criteria as `skip`s "queued for the stable v0.2 runner." The runner links the local `axis-protocol-sdk`, whose signing primitives (`generateKeypair`, `signCanonical`, `signDelegation`, `signAIT`, `jcsCanonicalize`) are now reused — no JCS or Ed25519 logic is reimplemented in this repo.
+
+### Added — runner
+
+- **`src/fixtures.js`** — signed-artifact builders on top of the SDK: a fresh-keypair helper, a JCS registration-proof builder (`proof.proofType: "jcs-eddsa-2026"`, `proofValue` over the JCS canonicalization of the register body minus `proof`), a legacy proofType-absent variant, an AIT mint with controlled claims, and a signed `DelegationCredential` envelope builder. Includes a local re-verify helper used by the self-test.
+- **`src/fixtures.test.js`** — network-free unit tests proving every fixture produces a VALID artifact (each proof/envelope/AIT re-verifies locally against its signing key via `importPublicKey` + `jcsCanonicalize` / `verifyAITLocally`), and that the JCS proof is invariant under deep key reordering. Wired into `npm test` alongside the structural self-test (`node --test`).
+- **New CLI args** `--known-operator-email` / `--known-operator-domain` (an operator the registrar key owns) to supply the register-body operator identity for the §13 signed-register probes.
+
+### Changed — runner
+
+- **§13 registration proof** — `13.1.b` (accepts `jcs-eddsa-2026`), `13.1.c` (accepts proofType absent), and `13.2.a` (JCS sorts at every nesting level) are now real probes. `13.2.a` runs unconditionally as a pure-local property; `13.1.b/c` POST a real signed body when a registrar key + known operator are supplied, else skip.
+- **§11 DC scope grammar** — `11.1.a` (empty scope), `11.1.b` (invalid char), `11.1.c` (multi-segment wildcard `**`), and `11.3.a` (>256 chars) now POST a properly-signed delegation envelope whose only defect is the scope, reaching mint-time scope validation and asserting `400 invalid_scope`; they skip when a registrar key + `--known-operator-id` issuer are absent.
+- **§10 AIT verification** — `10.1.c` (missing `aud`), `10.1.d` (`aud` mismatch vs advertised audience), and `10.2.a` (`dlg` → nonexistent credential) now mint properly-signed AITs with controlled claims and present them to `/verify`, asserting structured crash-free rejection.
+- **Still skip (documented):** `11.2.a` chain intersection and `10.2.b` depth cap — both require multi-credential chains anchored to agents whose private keys the runner is not supplied; the chain fixtures now exist, but the inputs do not (manual verification per §15.4).
+- All graceful-skip behaviour preserved: missing prerequisites yield `skip` (never `fail`), honoring the "more args = more tests" contract.
+
 ## [0.2.0-alpha.1] — 2026-05-12
 
 First v0.2 release. Adds normative conformance criteria for the six wire-format changes in [AXIS Protocol v0.2.0](https://github.com/MachinesOfDesire/axis-protocol/blob/main/CHANGELOG.md) (shipped 2026-05-11) plus runner test cases for the portion of those criteria automatable today. Also rolls in the canonical-infrastructure cleanup that landed in [axis-conformance#1](https://github.com/MachinesOfDesire/axis-conformance/pull/1) (merged 2026-05-11) which had been sitting at `[Unreleased]` between releases.

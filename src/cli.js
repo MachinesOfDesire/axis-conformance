@@ -52,7 +52,12 @@ Optional (more args = more tests run):
   --registrar-key-b KEY         A second registrar key (enables BOLA matrix)
   --admin-key KEY               A key with role=admin
   --super-admin-key KEY         A key with role=super_admin
-  --known-operator-id ID        An existing operator id (enables public-layer leak tests)
+  --known-operator-id ID        An existing operator id (enables public-layer leak tests
+                                and §11 mint-time scope probes, used as the issuer)
+  --known-operator-email EMAIL  Email of an operator the registrar key owns (enables
+                                §13 signed-register probes)
+  --known-operator-domain DOM   Domain of an operator the registrar key owns (alt to
+                                --known-operator-email for §13 signed-register probes)
   --known-agent-id ID           An existing agent id (enables public-layer leak tests)
 
 Output:
@@ -87,6 +92,8 @@ async function main() {
     adminKey: args["admin-key"],
     superAdminKey: args["super-admin-key"],
     knownOperatorId: args["known-operator-id"],
+    knownOperatorEmail: args["known-operator-email"],
+    knownOperatorDomain: args["known-operator-domain"],
     knownAgentId: args["known-agent-id"],
     options: { verbose: Boolean(args.verbose) },
   };
