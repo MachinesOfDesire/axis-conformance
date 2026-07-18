@@ -22,6 +22,10 @@ import section11 from "./tests/11-dc-scope-grammar.js";
 import section12 from "./tests/12-air-did-shape.js";
 import section13 from "./tests/13-registration-proof.js";
 import section14 from "./tests/14-access-policy-audience.js";
+import section16 from "./tests/16-registry-legitimacy.js";
+import section17 from "./tests/17-scope-vocabulary.js";
+import section18 from "./tests/18-versioned-discovery.js";
+import section19 from "./tests/19-delegation-chain.js";
 
 export const SECTIONS = [
   { id: "§1", title: "Authentication", tests: section01 },
@@ -35,6 +39,10 @@ export const SECTIONS = [
   { id: "§12", title: "AIR DID shape (v0.2)", tests: section12 },
   { id: "§13", title: "Registration proof format (v0.2)", tests: section13 },
   { id: "§14", title: "Access-policy advertisement (v0.2)", tests: section14 },
+  { id: "§16", title: "Registry-legitimacy artifacts (v0.3)", tests: section16 },
+  { id: "§17", title: "Scope-vocabulary discovery (v0.3)", tests: section17 },
+  { id: "§18", title: "Versioned discovery (v0.3)", tests: section18 },
+  { id: "§19", title: "Delegation chain resolution by dlg (v0.3)", tests: section19 },
 ];
 
 /**
@@ -48,6 +56,7 @@ export const SECTIONS = [
  * @property {string} [knownOperatorEmail]       — email of an operator the registrar key owns (§13 register probes)
  * @property {string} [knownOperatorDomain]      — domain of an operator the registrar key owns (§13 register probes)
  * @property {string} [knownAgentId]             — an existing agent id
+ * @property {string} [knownDelegationId]        — an existing delegation id (enables §19 chain-verdict probe)
  * @property {{verbose: boolean}} options
  */
 
