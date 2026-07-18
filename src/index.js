@@ -8,5 +8,5 @@
 export { runAll, SECTIONS, result } from "./runner.js";
 export { printHuman, printJson } from "./report.js";
 
-export const SUITE_VERSION = "0.2.0-alpha.1";
-export const CONFORMANCE_VERSION = "0.2";
+export const SUITE_VERSION = "0.3.0-alpha.1";
+export const CONFORMANCE_VERSION = "0.3";

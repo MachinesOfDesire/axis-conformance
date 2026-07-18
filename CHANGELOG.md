@@ -2,25 +2,47 @@
 
 All notable changes to `axis-conformance` (the spec docs at `conformance-v0.x.md` plus the test runner at `src/`). Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-The spec version (currently v0.2) and the runner version evolve independently. This changelog tracks **runner** versions; spec changes show up as version bumps in `conformance-v0.x.md` and in the runner's CLI banner.
+The spec version (currently v0.3) and the runner version evolve independently. This changelog tracks **runner** versions; spec changes show up as version bumps in `conformance-v0.x.md` and in the runner's CLI banner.
 
 ## [Unreleased]
 
-Closes the signed-artifact gap that kept the §10/§11/§13 criteria as `skip`s "queued for the stable v0.2 runner." The runner links the local `axis-protocol-sdk`, whose signing primitives (`generateKeypair`, `signCanonical`, `signDelegation`, `signAIT`, `jcsCanonicalize`) are now reused — no JCS or Ed25519 logic is reimplemented in this repo.
+## [0.3.0-alpha.1] — 2026-07-18
 
-### Added — runner
+First v0.3 release. Adds normative conformance criteria for the v0.3 protocol additions that are **live and publicly verifiable** on the reference registry, promotes the monotonic-attenuation requirement to a MUST, and records the specified-but-not-yet-enforced v0.3 mechanisms as manual-verification items rather than automated criteria. Also rolls in the signed-artifact fixtures that had been sitting at `[Unreleased]` between releases.
+
+### Added — spec v0.3
+
+- **`conformance-v0.3.md`** — new normative spec at the repo root. §1–§15 carry forward from v0.2 (with the §11.3.2 amendment below); §16–§19 are new conformance criteria for the v0.3 protocol additions that ship today:
+  - **§16 Registry-legitimacy artifacts** — signed self-manifest `/.well-known/axis-registry` (`axis_version`, `registry_id`, `keys[]` with `kid`/`public_key`/`alg`, top-level `signature`) and signed root directory `/.well-known/axis-directory` (`registrars[]` with `key_fingerprints[]`, `root_signature`), plus the legitimacy-chain link that the self-manifest's active key is fingerprinted in the directory (§16.1–§16.3)
+  - **§17 Scope-vocabulary discovery** — `/.well-known/axis-scopes` publishes the two-layer `namespace:action` standard vocabulary; each entry carries `scope`/`standard`/`description`; the core `content` namespace is required (§17.1)
+  - **§18 Versioned discovery** — every discovery document self-declares a machine-readable `axis_version`; the v0.3-introduced documents declare `"0.3"`; `/.well-known/axis-versions` is OPTIONAL in v0.3 (§18.1–§18.2)
+  - **§19 Delegation chain resolution by `dlg`** — `GET /delegations/:id/chain` is routed (resource-level 404 for a bogus id) and returns a chain verdict for a resolvable credential (§19.1)
+- **§11.3.2 promoted SHOULD → MUST** — mint-time monotonic-attenuation validation is now required, closing the privilege-escalation class at write time (per the v0.2 doc's own "v0.3 will promote to MUST" flag).
+- **§15.5 Manual-verification / deferred (v0.3)** — records the specified-but-not-yet-enforced v0.3 mechanisms (mint-time scope-vocabulary enforcement, sender-constrained AITs / `cnf.jkt` / DPoP, ephemeral sub-agent delegates, AIT `axis_version` claim, `/.well-known/axis-versions`), matching the protocol's `docs/IMPLEMENTATION-STATUS.md`. No automated pass/fail criteria are written for these; a compliant-but-honest registry would fail such probes.
+
+### Added — runner v0.3.0-alpha.1
+
+- **Four new test sections** at `src/tests/`: `16-registry-legitimacy.js`, `17-scope-vocabulary.js`, `18-versioned-discovery.js`, `19-delegation-chain.js`. Each registered in `runner.js` `SECTIONS`.
+- **Automatable coverage today** (public read-only GETs; verified passing against `registry.axisprime.ai`):
+  - §16.1.a–d / §16.2.a–c — self-manifest and root directory served, well-formed, and signed
+  - §16.3.a — legitimacy chain: `sha256(active public key)` is present in the directory's `key_fingerprints[]`
+  - §17.1.a–e — scopes manifest served, well-formed, two-layer standard grammar, core `content` namespace present
+  - §18.1.a–c — every discovery document declares `axis_version`; the v0.3 docs declare `"0.3"`; `axis-access` declares its version
+  - §18.2.a — `axis-versions` is optional (passes whether it is cleanly absent or served-and-valid; cannot fail a compliant registry)
+  - §19.1.a — chain endpoint is routed (resource-level 404 vs router "no route" 404)
+- **Deferred / skip (documented):** §19.1.b (chain verdict for a known credential) skips unless `--known-delegation-id` is supplied — the runner never mints or mutates state to satisfy it. The v0.3 not-yet-enforced mechanisms (§15.5) are intentionally NOT probed.
+- **New CLI arg** `--known-delegation-id ID` enabling the §19.1.b chain-verdict probe.
+- **CLI banner advertises spec v0.3 coverage.** `SUITE_VERSION` bumped `0.2.0-alpha.1` → `0.3.0-alpha.1`; `CONFORMANCE_VERSION` bumped `0.2` → `0.3`. CLI help text and report headers updated.
+- **`package.json` version** bumped to `0.3.0-alpha.1`.
+
+### Added — signed-artifact fixtures (carried from the prior `[Unreleased]`)
+
+Closes the signed-artifact gap that kept the §10/§11/§13 criteria as `skip`s "queued for the stable v0.2 runner." The runner links the local `axis-protocol-sdk`, whose signing primitives (`generateKeypair`, `signCanonical`, `signDelegation`, `signAIT`, `jcsCanonicalize`) are reused — no JCS or Ed25519 logic is reimplemented in this repo.
 
 - **`src/fixtures.js`** — signed-artifact builders on top of the SDK: a fresh-keypair helper, a JCS registration-proof builder (`proof.proofType: "jcs-eddsa-2026"`, `proofValue` over the JCS canonicalization of the register body minus `proof`), a legacy proofType-absent variant, an AIT mint with controlled claims, and a signed `DelegationCredential` envelope builder. Includes a local re-verify helper used by the self-test.
 - **`src/fixtures.test.js`** — network-free unit tests proving every fixture produces a VALID artifact (each proof/envelope/AIT re-verifies locally against its signing key via `importPublicKey` + `jcsCanonicalize` / `verifyAITLocally`), and that the JCS proof is invariant under deep key reordering. Wired into `npm test` alongside the structural self-test (`node --test`).
-- **New CLI args** `--known-operator-email` / `--known-operator-domain` (an operator the registrar key owns) to supply the register-body operator identity for the §13 signed-register probes.
-
-### Changed — runner
-
-- **§13 registration proof** — `13.1.b` (accepts `jcs-eddsa-2026`), `13.1.c` (accepts proofType absent), and `13.2.a` (JCS sorts at every nesting level) are now real probes. `13.2.a` runs unconditionally as a pure-local property; `13.1.b/c` POST a real signed body when a registrar key + known operator are supplied, else skip.
-- **§11 DC scope grammar** — `11.1.a` (empty scope), `11.1.b` (invalid char), `11.1.c` (multi-segment wildcard `**`), and `11.3.a` (>256 chars) now POST a properly-signed delegation envelope whose only defect is the scope, reaching mint-time scope validation and asserting `400 invalid_scope`; they skip when a registrar key + `--known-operator-id` issuer are absent.
-- **§10 AIT verification** — `10.1.c` (missing `aud`), `10.1.d` (`aud` mismatch vs advertised audience), and `10.2.a` (`dlg` → nonexistent credential) now mint properly-signed AITs with controlled claims and present them to `/verify`, asserting structured crash-free rejection.
-- **Still skip (documented):** `11.2.a` chain intersection and `10.2.b` depth cap — both require multi-credential chains anchored to agents whose private keys the runner is not supplied; the chain fixtures now exist, but the inputs do not (manual verification per §15.4).
-- All graceful-skip behaviour preserved: missing prerequisites yield `skip` (never `fail`), honoring the "more args = more tests" contract.
+- **CLI args** `--known-operator-email` / `--known-operator-domain` (an operator the registrar key owns) supply the register-body operator identity for the §13 signed-register probes.
+- **§13 / §11 / §10 real probes** — `13.1.b/c` + `13.2.a` (JCS proof), `11.1.a–c` + `11.3.a` (mint-time scope validation via signed envelope), `10.1.c/d` + `10.2.a` (controlled-claim AITs to `/verify`) now run when the relevant inputs are supplied, else skip. All graceful-skip behaviour preserved: missing prerequisites yield `skip` (never `fail`).
 
 ## [0.2.0-alpha.1] — 2026-05-12
 

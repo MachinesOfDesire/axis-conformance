@@ -1,7 +1,7 @@
 {
   "name": "axis-conformance",
-  "version": "0.2.0-alpha.1",
-  "description": "Conformance test suite for AXIS registries. Probes a registry URL against the Registry Conformance v0.1 spec and emits a pass/fail report.",
+  "version": "0.3.0-alpha.1",
+  "description": "Conformance test suite for AXIS registries. Probes a registry URL against the Registry Conformance spec and emits a pass/fail report.",
   "type": "module",
   "main": "src/index.js",
   "bin": {

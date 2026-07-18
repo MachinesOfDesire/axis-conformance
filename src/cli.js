@@ -42,7 +42,7 @@ function parseArgs(argv) {
 }
 
 function helpText() {
-  return `axis-conformance — probe an AXIS registry for Registry Conformance v0.2
+  return `axis-conformance — probe an AXIS registry for Registry Conformance v0.3
 
 Required:
   --registry-url URL            The registry to test
@@ -59,6 +59,7 @@ Optional (more args = more tests run):
   --known-operator-domain DOM   Domain of an operator the registrar key owns (alt to
                                 --known-operator-email for §13 signed-register probes)
   --known-agent-id ID           An existing agent id (enables public-layer leak tests)
+  --known-delegation-id ID      An existing delegation id (enables the §19 chain-verdict probe)
 
 Output:
   --json                        Emit JSON instead of human-readable report
@@ -95,6 +96,7 @@ async function main() {
     knownOperatorEmail: args["known-operator-email"],
     knownOperatorDomain: args["known-operator-domain"],
     knownAgentId: args["known-agent-id"],
+    knownDelegationId: args["known-delegation-id"],
     options: { verbose: Boolean(args.verbose) },
   };
 
