@@ -6,6 +6,10 @@ The spec version (currently v0.3) and the runner version evolve independently. T
 
 ## [Unreleased]
 
+### Changed — spec v0.3
+
+- **New amendment to carried-forward §12.2.2 (tier vocabulary)** in `conformance-v0.3.md`: the verification-tier vocabulary was corrected before v0.3 ratification to `email | domain | kyc | kyb` (`kyb_individual` → `kyc`, `kyb_organization` → `kyb`, per protocol SPEC §2/§4.2). Slug-derivation behavior per rung is unchanged; only the tier names are corrected. The "What changed from v0.2" preamble now records two amendments (§11.3.2, §12.2.2). `conformance-v0.2.md` is historical and intentionally untouched. No runner changes — the tier tests check field visibility, not tier values.
+
 ## [0.3.0-alpha.1] — 2026-07-18
 
 First v0.3 release. Adds normative conformance criteria for the v0.3 protocol additions that are **live and publicly verifiable** on the reference registry, promotes the monotonic-attenuation requirement to a MUST, and records the specified-but-not-yet-enforced v0.3 mechanisms as manual-verification items rather than automated criteria. Also rolls in the signed-artifact fixtures that had been sitting at `[Unreleased]` between releases.
