@@ -11,7 +11,7 @@ The key words "MUST", "MUST NOT", "SHOULD", "SHOULD NOT", and "MAY" in this docu
 
 ## What changed from v0.2
 
-§1 through §15 carry forward from [Registry Conformance v0.2](./conformance-v0.2.md) unchanged, **except for the single amendment to §11.3.2 recorded below.** §16 through §19 are new operational requirements arising from the v0.3 protocol additions that are **implemented and serving** in the reference registry. §15 remains the meta-conformance section; its runner-coverage enumeration is extended to include the v0.3 sections.
+§1 through §15 carry forward from [Registry Conformance v0.2](./conformance-v0.2.md) unchanged, **except for the two amendments recorded below (§11.3.2 and §12.2.2).** §16 through §19 are new operational requirements arising from the v0.3 protocol additions that are **implemented and serving** in the reference registry. §15 remains the meta-conformance section; its runner-coverage enumeration is extended to include the v0.3 sections.
 
 AXIS Protocol v0.3 is *additive* over v0.2 and deliberately ships ahead of its own enforcement in several places — some v0.3 mechanisms are **specified now, enforced later**. This conformance document writes **automated MUST/SHOULD criteria only for the v0.3 mechanisms that are live and verifiable against a deployed registry via public reads.** The specified-but-not-yet-enforced mechanisms are listed under "Manual-verification / deferred" (§15.5); writing pass/fail criteria for them would penalize a registry that is honestly conformant with v0.3's own staged-rollout intent.
 
@@ -33,6 +33,17 @@ A registry that meets v0.2 but does not yet serve §16–§19 is **v0.2-conforma
 **§11.3.2 (v0.3).** Registries that accept scope strings on `POST /delegations` **MUST** perform monotonic-attenuation validation at mint time: every scope in the new delegation MUST be implied by the issuer's own scope (or, if the issuer is acting under a parent delegation, by that parent's effective scope). A delegation that attempts to broaden scope beyond the issuer's authority MUST be rejected with HTTP 400. This closes the privilege-escalation class at write time rather than relying solely on verify-time intersection (§11.2).
 
 All other clauses of §11 are unchanged from v0.2.
+
+### Amendment to carried-forward §12.2.2 (tier vocabulary)
+
+The verification-tier vocabulary was corrected before v0.3 ratification to four bare method names, totally ordered: `email | domain | kyc | kyb` (protocol SPEC §2 and §4.2; `kyb_individual` → `kyc`, `kyb_organization` → `kyb`). §12.2.2's tier-driven slug derivation therefore reads, in v0.3 vocabulary:
+
+- **`domain` tier**: unchanged — slug is the verified domain root with TLD stripped.
+- **`email` tier**: unchanged — opaque random.
+- **`kyc` tier**: same as `email` tier — opaque random (never derived from a personal name).
+- **`kyb` tier**: domain root if a verified domain is present, otherwise opaque random.
+
+Derivation behavior per rung is identical to v0.2; only the tier names are corrected. A v0.3-conformant registry MUST use the corrected vocabulary in its records and discovery documents. All other clauses of §12 are unchanged from v0.2.
 
 ---
 
